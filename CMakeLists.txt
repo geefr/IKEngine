@@ -1,6 +1,10 @@
 
 cmake_minimum_required(VERSION 3.2)
 
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  message( FATAL_ERROR "In-tree builds are not supported by this project")
+endif()
+
 set( IKENGINE_VERSION_MAJOR 0 )
 set( IKENGINE_VERSION_MINOR 0 )
 set( IKENGINE_VERSION_PATCH 1 )

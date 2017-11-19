@@ -47,4 +47,12 @@ class Servo
   Servo();
 };
 
+inline Servo::Servo()
+{
+}
+
+inline Servo::~Servo()
+{
+}
+
 #endif

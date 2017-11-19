@@ -1,0 +1,3 @@
+set( TEST_DYNAMIXEL_SRCS
+  test_dynamixel.cpp
+)

@@ -14,6 +14,10 @@ class Controller_Dynamixel
     void setServoAngle( unsigned int servoID, float angle );
     float getServoAngle( unsigned int servoID );
   private:
+    int angleToPosition( float angle ) const;
+    float positionToAngle( int position ) const;
+    void dxlError() const;
+
     bool m_valid;
 };
 

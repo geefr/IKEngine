@@ -11,7 +11,7 @@ class Servo_Dynamixel : public Servo
     virtual ~Servo_Dynamixel();
 
     virtual void set( float angle );
-    virtual float get( bool allowCached = true );
+    virtual float get( bool allowCached );
 
   private:
     Controller_Dynamixel& m_controller;

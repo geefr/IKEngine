@@ -18,6 +18,5 @@ install( TARGETS ikengine
          ARCHIVE DESTINATION lib )
 install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
          DESTINATION include 
-         FILES_MATCHING PATTERN *.h 
-         PATTERN util EXCLUDE )
+         FILES_MATCHING PATTERN *.h )
 

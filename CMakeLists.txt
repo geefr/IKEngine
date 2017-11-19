@@ -21,6 +21,7 @@ endif()
 set( LIB_TYPE SHARED CACHE STRING "The type of library to build" )
 set_property( CACHE LIB_TYPE PROPERTY STRINGS "SHARED" "STATIC" )
 option( USE_LIBDXL "Include support for Dynamixel servos" ON )
+option( BUILD_TEST "Build test executables" ON )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_FLAGS "-Werror=all" )
@@ -37,3 +38,6 @@ endif()
 
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/ikengine )
 
+if( BUILD_TEST )
+  add_subdirectory( ${PROJECT_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test )
+endif()

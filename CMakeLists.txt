@@ -35,26 +35,5 @@ if( USE_LIBDXL )
   add_subdirectory( ${PROJECT_SOURCE_DIR}/thirdparty/libdxl ${CMAKE_BINARY_DIR}/libdxl )
 endif()
 
-# libikengine
-include( sources.libikengine )
-if( USE_LIBDXL )
-  list( APPEND LIBIKENGINE_SRCS ${LIBIKENGINE_LIBDXL_SRCS} )
-  list( APPEND LIBIKENGINE_LINK dxl )
-endif()
-include_directories( 
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_SOURCE_DIR}/thirdparty
-  ${EIGEN3_INCLUDE_DIR} )
-add_library( ikengine SHARED ${LIBIKENGINE_SRCS} )
-target_link_libraries( ikengine ${LIBIKENGINE_LINK} )
-
-install( TARGETS ikengine
-         RUNTIME DESTINATION bin
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib )
-install( DIRECTORY ${PROJECT_SOURCE_DIR}
-         DESTINATION include 
-         FILES_MATCHING PATTERN *.h 
-         PATTERN thirdparty EXCLUDE
-         PATTERN util EXCLUDE )
+add_subdirectory( ${PROJECT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/ikengine )
 

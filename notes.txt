@@ -1,0 +1,14 @@
+
+honestly can't remember what the plan was with this, or where any existing notes are
+
+This library is intended as a tool to learn inverse kinematics, and evantually replace the junk algorithms using in the phex code (Which is so inflexible it's hard to make any progress on the project)
+
+An appendage is defined with a string of joints and limbs e.g
+body -> joint -> limb -> joint -> limb -> joint -> limb would be an arm/leg with 3 joints.
+
+A limb in this case is any solid connection, whether a short coupling between
+2 joints (servos bolted together) or long section of the appendage
+
+A joint has a single rotational axis. If multi-axis joints are needed in the future this will need to change
+
+

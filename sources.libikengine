@@ -1,0 +1,9 @@
+set( LIBIKENGINE_SRCS
+  limb.cpp
+  joint.cpp
+)
+
+set( LIBIKENGINE_LIBDXL_SRCS
+  servos/servo_dynamixel.cpp
+  util/controller_dynamixel.cpp
+)

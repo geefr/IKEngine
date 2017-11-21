@@ -8,7 +8,13 @@
 
 int main(int argc, char** argv)
 {
-  Controller_Dynamixel controller;
+  std::string device{ "/dev/ttyUSB0" };
+  if( argc >= 2 )
+  {
+    device = argv[1];
+  }
+
+  Controller_Dynamixel controller( device );
   if( !controller.valid() )
   {
     std::cout << "Failed to initialise dynamixel controller" << std::endl;

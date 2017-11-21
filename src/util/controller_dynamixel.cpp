@@ -1,43 +1,51 @@
 
 #include "controller_dynamixel.h"
 
-#include "libdxl/dynamixel.h"
-
 #include <cmath>
 #include <iostream>
 
-// Servo settings
-// Control table address
-#define P_GOAL_POSITION_L       30
-#define P_GOAL_POSITION_H       31
-#define P_GOAL_SPEED_L          32
-#define P_GOAL_SPEED_H          33
-#define P_PRESENT_POSITION_L    36
-#define P_PRESENT_POSITION_H    37
-#define P_MOVING                46
+#define ADDR_PRO_TORQUE_ENABLE 562
+#define ADDR_PRO_GOAL_POSITION 596
+#define ADDR_PRO_PRESENT_POSITION 611
+
+#define PROTOCOL_VERSION 2.0
+
+#define DXL_ID 1
+#define BAUDRATE 1000000
+#define DEVICENAME "/dev/ttyUSB0"
+
+#define TORQUE_ENABLE 1
+#define TORQUE_DISABLE 0
+#define DXL_MINIMUM_POSITION_VALUE -150000
+#define DXL_MAXIMUM_POSITION_VALUE  150000
+#define DXL_MOVING_STATUS_THRESHOLD 20
 
 // Default setting
 #define DEFAULT_BAUDNUM         1 // 1Mbps
 #define DEFAULT_ID              1 // ttyUSBX
 
-Controller_Dynamixel::Controller_Dynamixel()
-: m_valid{ false }
+Controller_Dynamixel::Controller_Dynamixel( const std::string& deviceName )
+: m_portHandler{ dynamixel::PortHandler::getPortHandler( deviceName.c_str() ) }
+, m_packetHandler{ dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION) }
+, m_valid{ false }
 {
-  // TODO: Check what these do, this will only work
-  // for the phex setup (dx12 servos, usb adapter)
-  int baudNum{ DEFAULT_BAUDNUM };
-  int deviceIndex{ DEFAULT_ID };
-
-  if( dxl_initialize(deviceIndex, baudNum ) == 0 )
+  if (!m_portHandler->openPort())
   {
     return;
   }
+
+  if (!m_portHandler->setBaudRate(BAUDRATE))
+  {
+    return;
+  }
+
+
   m_valid = true;
 }
 
 Controller_Dynamixel::~Controller_Dynamixel()
 {
-  dxl_terminate();
+  m_portHandler->closePort();
 }
 
 bool Controller_Dynamixel::valid() const
@@ -45,63 +53,53 @@ bool Controller_Dynamixel::valid() const
   return m_valid;
 }
 
+void Controller_Dynamixel::setTorque( unsigned int servoID, bool enabled )
+{
+  // Enable torque
+  uint8_t dxlCode{ 0x00 };
+  int result = m_packetHandler->write1ByteTxRx(m_portHandler, servoID, ADDR_PRO_TORQUE_ENABLE, enabled ? TORQUE_ENABLE : TORQUE_DISABLE, &dxlCode);
+  dxlError(result, dxlCode);
+}
+
 void Controller_Dynamixel::setServoAngle( unsigned int servoID, float angle )
 {
   int position{ angleToPosition(angle) };
-  dxl_write_word( servoID, P_GOAL_POSITION_L, position );
-  dxlError();
+
+  uint8_t dxlCode{ 0x00 };
+  int result = m_packetHandler->write4ByteTxRx(m_portHandler, servoID, ADDR_PRO_GOAL_POSITION, position, &dxlCode);
+  dxlError(result, dxlCode);
 }
 
 float Controller_Dynamixel::getServoAngle( unsigned int servoID )
 {
-  int position{ dxl_read_word( servoID, P_PRESENT_POSITION_L ) };
-  dxlError();
-
+  // Position is an int
+  int position{ 0 };
+  uint8_t dxlCode{ 0x00 };
+  // For reading it's read as a 4-byte block, so uint32_t*
+  int result = m_packetHandler->read4ByteTxRx(m_portHandler, servoID, ADDR_PRO_PRESENT_POSITION, (uint32_t*)&position, &dxlCode);
+  dxlError( result, dxlCode );
+  
   return positionToAngle( position );
 }
 
 int Controller_Dynamixel::angleToPosition( float angle ) const
 {
-  // Ensure angle is positive
-  angle += M_PI;
-
-  // Servo position is 0 -> 1024
-  // 0 -> 4096 for EX series
-  return (int)(1024.0f / angle);
+  return (int)( (angle + M_PI) * (360.0 / (float)(DXL_MAXIMUM_POSITION_VALUE - DXL_MINIMUM_POSITION_VALUE)) );
 }
 
 float Controller_Dynamixel::positionToAngle( int position ) const
 {
-  float angle( position * ((2 * M_PI)/1024) );
-  return angle - M_PI;
+  return (float)( ((float)position * (float)(DXL_MAXIMUM_POSITION_VALUE - DXL_MINIMUM_POSITION_VALUE)) - M_PI);
 }
 
-void Controller_Dynamixel::dxlError() const
+void Controller_Dynamixel::dxlError(int result, uint8_t dxlCode) const
 {
-return;
-  switch( dxl_get_result() )
+  if (result != COMM_SUCCESS)
   {
-    case COMM_TXSUCCESS:
-      break;
-    case COMM_RXSUCCESS:
-      break;
-    case COMM_TXFAIL:
-      std::cerr << "Controller_Dynamixel: COMM_TXFAIL" << std::endl;
-      break;
-    case COMM_RXFAIL:
-      std::cerr << "Controller_Dynamixel: COMM_RXFAIL" << std::endl;
-      break;
-    case COMM_TXERROR:
-      std::cerr << "Controller_Dynamixel: COMM_TXERROR" << std::endl;
-      break;
-    case COMM_RXWAITING:
-      std::cerr << "Controller_Dynamixel: COMM_RXWAITING" << std::endl;
-      break;
-    case COMM_RXTIMEOUT:
-      std::cerr << "Controller_Dynamixel: COMM_RXTIMEOUT" << std::endl;
-      break;
-    case COMM_RXCORRUPT:
-      std::cerr << "Controller_Dynamixel: COMM_RXCORRUPT" << std::endl;
-      break;
+    m_packetHandler->printTxRxResult(result);
+  }
+  else if (dxlCode != 0)
+  {
+    m_packetHandler->printRxPacketError(dxlCode);
   }
 }

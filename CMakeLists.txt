@@ -20,7 +20,7 @@ endif()
 
 set( LIB_TYPE SHARED CACHE STRING "The type of library to build" )
 set_property( CACHE LIB_TYPE PROPERTY STRINGS "SHARED" "STATIC" )
-option( USE_LIBDXL "Include support for Dynamixel servos" ON )
+option( ENABLE_DYNAMIXEL "Include support for Dynamixel servos" ON )
 option( BUILD_TEST "Build test executables" ON )
 
 set( CMAKE_CXX_STANDARD 11 )
@@ -32,8 +32,11 @@ if( NOT EIGEN3_FOUND )
 endif()
 
 # libdxl
-if( USE_LIBDXL )
-  add_subdirectory( ${PROJECT_SOURCE_DIR}/thirdparty/libdxl ${CMAKE_BINARY_DIR}/libdxl )
+if( ENABLE_DYNAMIXEL )
+  # Build the dynamixel SDK as part of this project
+  # EXCLUDE_FROM_ALL ensures the install rules from this file won't be run
+  add_subdirectory( ${PROJECT_SOURCE_DIR}/thirdparty/DynamixelSDK/c++ ${CMAKE_BINARY_DIR}/thirdparty/DynamixelSDK EXCLUDE_FROM_ALL )
+  set( DYNAMIXELSDK_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/thirdparty/DynamixelSDK/c++/include/dynamixel_sdk )
 endif()
 
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/ikengine )

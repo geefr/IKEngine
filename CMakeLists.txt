@@ -37,6 +37,8 @@ if( ENABLE_DYNAMIXEL )
   # EXCLUDE_FROM_ALL ensures the install rules from this file won't be run
   add_subdirectory( ${PROJECT_SOURCE_DIR}/thirdparty/DynamixelSDK/c++ ${CMAKE_BINARY_DIR}/thirdparty/DynamixelSDK EXCLUDE_FROM_ALL )
   set( DYNAMIXELSDK_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/thirdparty/DynamixelSDK/c++/include/dynamixel_sdk )
+  install( FILES "${CMAKE_BINARY_DIR}/devel/lib/${CMAKE_SHARED_LIBRARY_PREFIX}dynamixel_sdk${CMAKE_SHARED_LIBRARY_SUFFIX}"
+           DESTINATION lib )
 endif()
 
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/ikengine )

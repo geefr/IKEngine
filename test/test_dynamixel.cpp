@@ -1,6 +1,8 @@
 
 #include "servos/servo_dynamixel.h"
 #include "util/controller_dynamixel.h"
+using namespace IKEngine;
+
 
 #include <cmath>
 #include <iostream>
@@ -44,8 +46,9 @@ int main(int argc, char** argv)
       angle -= 1.0;
       if( angle < minAngle ) increase = true;
     }
-    std::cout << "Servo angle: " << angle << std::endl;
+    std::cout << "Setting Servo angle: " << angle << std::endl;
     servo->set( angle * (M_PI/180) );
+    std::cout << "Read servo angle: " << servo->get(false) << std::endl;
   }
 
   return 0;

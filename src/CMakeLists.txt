@@ -1,6 +1,6 @@
 
 # libikengine
-include( sources.libikengine )
+include( sources )
 if( ENABLE_DYNAMIXEL )
   list( APPEND LIBIKENGINE_SRCS ${LIBIKENGINE_LIBDXL_SRCS} )
   list( APPEND LIBIKENGINE_LINK dynamixel_sdk )

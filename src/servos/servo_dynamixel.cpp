@@ -3,6 +3,8 @@
 
 namespace IKEngine
 {
+	using namespace Util;
+
 	Servo_Dynamixel::Servo_Dynamixel( Controller_Dynamixel& controller, unsigned int servoID, float angle )
 	: m_controller( controller )
 	, m_id{ servoID }

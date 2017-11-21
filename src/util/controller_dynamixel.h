@@ -3,8 +3,8 @@
 
 #include "dynamixel_sdk.h"
 
-namespace IKEngine
-{
+namespace IKEngine { namespace Util {
+
 	/// Controller to drive Dynamixel servos
 	class Controller_Dynamixel
 	{
@@ -27,6 +27,6 @@ namespace IKEngine
 
 			bool m_valid;
 	};
-}
+} }
 
 #endif

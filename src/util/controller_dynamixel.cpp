@@ -25,8 +25,7 @@
 #define DEFAULT_ID              1 // ttyUSBX
 
 
-namespace IKEngine
-{
+namespace IKEngine { namespace Util {
 		
 	Controller_Dynamixel::Controller_Dynamixel( const std::string& deviceName )
 	: m_portHandler{ dynamixel::PortHandler::getPortHandler( deviceName.c_str() ) }
@@ -110,4 +109,4 @@ namespace IKEngine
 			m_packetHandler->printRxPacketError(dxlCode);
 		}
 	}
-}
+} }

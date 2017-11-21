@@ -2,7 +2,7 @@
 #include "servos/servo_dynamixel.h"
 #include "util/controller_dynamixel.h"
 using namespace IKEngine;
-
+using namespace IKEngine::Util;
 
 #include <cmath>
 #include <iostream>

@@ -34,6 +34,14 @@ namespace IKEngine
       // - Display in software/test applications before using hardware
       
       std::vector<std::shared_ptr<Joint>> m_appendages;
+
+#ifdef IKENGINE_OSG
+      osg::ref_ptr<osg::Drawable> osgGeometry() const;
+
+  private:
+    osg::ref_ptr<osg::Box> m_osgGeometry;
+    osg::ref_ptr<osg::Drawable> m_osgDrawable;
+#endif
   };
 };
 

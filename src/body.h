@@ -1,6 +1,8 @@
 #ifndef BODY_H
 #define BODY_H
 
+#include "config.h"
+
 #include "libikengine.h"
 #include "limb.h"
 #include "joint.h"

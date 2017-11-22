@@ -1,10 +1,16 @@
 #ifndef LIMB_H
 #define LIMB_H
 
+#include "config.h"
+
 #include "libikengine.h"
 #include "joint.h"
 
 #include <memory>
+
+#ifdef IKENGINE_OSG
+# include <osg/Geometry>
+#endif
 
 namespace IKEngine
 {
@@ -36,12 +42,19 @@ namespace IKEngine
        * Vector points from backJoint -> frontJoint
        */
       const vec3& limbVector() const;
-      
+     
+#ifdef IKENGINE_OSG
+      osg::ref_ptr<osg::Geometry> osgGeometry() const;
+#endif
+
     private:
       std::shared_ptr<Joint> m_backJoint;
       std::shared_ptr<Joint> m_frontJoint;
       float m_length;
       vec3 m_limbVector;
+#ifdef IKENGINE_OSG
+      osg::ref_ptr<osg::Geometry> m_osgGeometry;
+#endif
   };
     
   inline std::shared_ptr<Joint> Limb::backJoint() const

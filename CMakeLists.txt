@@ -24,6 +24,7 @@ option( ENABLE_DYNAMIXEL "Include support for Dynamixel servos" ON )
 option( BUILD_TEST "Build test executables" ON )
 option( BUILD_DOC "Build documentation" ON )
 option( BUILD_APPLICATION "Build applications" ON )
+option( IKENGINE_OSG "Build OpenSceneGraph extensions to libikengine" ON )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_FLAGS "-Werror=all" )
@@ -59,6 +60,9 @@ if( ENABLE_DYNAMIXEL )
   install( FILES "${CMAKE_BINARY_DIR}/devel/lib/${CMAKE_SHARED_LIBRARY_PREFIX}dynamixel_sdk${CMAKE_SHARED_LIBRARY_SUFFIX}"
            DESTINATION lib )
 endif()
+
+# Common include directories for everything
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/ikengine )
 
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/ikengine )
 

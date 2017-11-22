@@ -1,6 +1,8 @@
 #ifndef JOINT_H
 #define JOINT_H
 
+#include "config.h"
+
 #include "libikengine.h"
 #include "servos/servo.h"
 

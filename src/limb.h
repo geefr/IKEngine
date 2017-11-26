@@ -28,7 +28,7 @@ namespace IKEngine
        * @param length Length of the limb
        * @param limbVector Direction vector of the limb
        */
-      Limb( float length, const vec3& limbVector = { 0.0f, 0.0f, -1.0f } );
+      Limb( float length, const vec3& limbVector = { 0.0f, 0.0f, 1.0f } );
       ~Limb();
       
       std::shared_ptr<Joint> backJoint() const;

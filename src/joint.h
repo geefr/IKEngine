@@ -26,11 +26,32 @@ namespace IKEngine
        */
       Joint( Servo* servo, float degreeOffset = 0.0, const vec3& rotationAxis = { 1.0, 0.0, 0.0 } );
       ~Joint();
+
+      std::shared_ptr<Limb> next() const;
+      void next( std::shared_ptr<Limb> l );
+
+      vec3& position();
+      vec3& direction();
+      vec3& up();
       
     private:
       float m_degreeOffset;
       std::unique_ptr<Servo> m_servo;
+      // Position (in parent's coordinate space)
+      vec3 m_position;
+      // Direction corresponding to zero degrees
+      vec3 m_direction;
+      // The up vector. All joints rotate around the x axis (Along this vector)
+      vec3 m_up;
+
+      // The Limb attached to this joint
+      // Normally pointing straight along m_direction
+      std::shared_ptr<Limb> m_next;
   };
+
+  inline vec3& Joint::position() { return m_position; };
+  inline vec3& Joint::direction() { return m_direction; };
+  inline vec3& Joint::up() { return m_up; };
 };
 
 #endif

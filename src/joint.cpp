@@ -15,4 +15,13 @@ namespace IKEngine
     
   }
 
+  std::shared_ptr<Limb> Joint::next() const
+  {
+    return m_next;
+  }
+
+  void Joint::next( std::shared_ptr<Limb> l )
+  {
+    m_next = l;
+  }
 };

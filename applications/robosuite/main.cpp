@@ -20,13 +20,22 @@ int main()
     root->addChild( roboGeode );
 
     // Create a body
-    IKEngine::Body testBody;
+    IKEngine::Body testBody( IKEngine::vec3(3.0, 2.0, 1.0) );
     roboGeode->addDrawable( testBody.osgGeometry() );
 
+    // Single joint/limb
+    {
+      std::shared_ptr<Joint> shoulder{ new Joint( new Servo_Mock ) };
+      std::shared_ptr<Limb> arm{ new Limb( 10.0 ) };
+      shoulder->next( arm );
+      testBody->addAppendage( shoulder, IKEngine::vec3(0.0, 0.0, 1.0), IKEngine::vec3(0.0, 1.0, 0.0) );
+    }
+
+
     // Create a limb
-    IKEngine::Limb testLimb( 10.0, IKEngine::vec3(0.0, 0.0, 1.0) );
-    osg::ref_ptr<osg::Geometry> limbGeom( testLimb.osgGeometry() );
-    roboGeode->addDrawable(limbGeom);
+    //IKEngine::Limb testLimb( 10.0, IKEngine::vec3(0.0, 0.0, 1.0) );
+    //osg::ref_ptr<osg::Geometry> limbGeom( testLimb.osgGeometry() );
+    //roboGeode->addDrawable(limbGeom);
 
     // switch off lighting as we haven't assigned any normals
     root->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);

@@ -8,7 +8,21 @@ namespace IKEngine
   , m_limbVector{ limbVector }
   {
     m_limbVector.normalize();
-#ifdef IKENGINE_OSG
+  }
+
+  Limb::~Limb()
+  {
+    
+  }
+
+# ifdef IKENGINE_OSG
+  osg::ref_ptr<osg::Geometry> Limb::osgGeometry() const
+  {
+    if( m_osgGeometry )
+    {
+      return m_osgGeometry;
+    }
+
     m_osgGeometry = new osg::Geometry();
 
     osg::ref_ptr<osg::Vec3Array> vertices{ new osg::Vec3Array() };
@@ -23,18 +37,9 @@ namespace IKEngine
     m_osgGeometry->setVertexArray(vertices.get());
     m_osgGeometry->setColorArray(colour.get());
     m_osgGeometry->addPrimitiveSet(new osg::DrawArrays(GL_LINES,0,2));
-#endif
-  }
-  
-  Limb::~Limb()
-  {
-    
-  }
 
-#ifdef IKENGINE_OSG
-  osg::ref_ptr<osg::Geometry> Limb::osgGeometry() const
-  {
     return m_osgGeometry;
   }
+# endif
 #endif
 };

@@ -4,16 +4,21 @@
 #include "config.h"
 
 #include "libikengine.h"
-#include "joint.h"
 
 #include <memory>
 
+
 #ifdef IKENGINE_OSG
 # include <osg/Geometry>
+# include <osg/Transform>
+# include <osg/Geode>
 #endif
+
 
 namespace IKEngine
 {
+  class Joint;
+  
   /**
    * A Limb connecting 1 or more joints
    * 'Back' joint is the joint before this limb
@@ -44,7 +49,18 @@ namespace IKEngine
       const vec3& limbVector() const;
      
 #ifdef IKENGINE_OSG
-      osg::ref_ptr<osg::Geometry> osgGeometry() const;
+      // All geometry/nodes are created in this method, a fresh set is created every time
+      osg::ref_ptr<osg::Group> createOsgGeometry();
+      // Getter for the osg node
+      osg::ref_ptr<osg::Group> osgGeometry() const;
+      // Call to update the gometry for the robot's parameters
+      void updateOsgGeometry();
+
+    private:
+      // For now hold references to all of these
+      osg::ref_ptr<osg::Transform> m_osgTransform;
+      osg::ref_ptr<osg::Geode> m_osgGeode;
+      osg::ref_ptr<osg::Geometry> m_osgGeometry;
 #endif
 
     private:
@@ -52,9 +68,6 @@ namespace IKEngine
       std::shared_ptr<Joint> m_frontJoint;
       float m_length;
       vec3 m_limbVector;
-#ifdef IKENGINE_OSG
-      osg::ref_ptr<osg::Geometry> m_osgGeometry;
-#endif
   };
     
   inline std::shared_ptr<Joint> Limb::backJoint() const

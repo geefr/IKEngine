@@ -10,6 +10,13 @@
 #include <memory>
 #include <vector>
 
+#ifdef IKENGINE_OSG
+# include <osg/Drawable>
+# include <osg/PositionAttitudeTransform>
+# include <osg/Geometry>
+# include <osg/Geode>
+#endif
+
 namespace IKEngine
 {
   /**
@@ -42,11 +49,27 @@ namespace IKEngine
       void removeAppendage( size_t i );
 
 #ifdef IKENGINE_OSG
-      osg::ref_ptr<osg::Drawable> osgGeometry() const;
+      // Body provides the root of the robot for osg
+      // Returns an osg::Group (Transform actually to allow for robot positioning/etc)
+      // - Containing an osgDrawable for the body, with the gometry for the body within
+      // - Each joint is another osg::Group, containing nothing (for now, might need a blob for the joing)
+      // - In this group there is another Group for the Limb, which in turn can contain more Joints. The Limb's group also contains a Drawable for the Limb itself
+      // Applications should just call createOsgGeometry on the Body, then updateOsgGeometry when needed
+      // Applications should not call createOsgGeometry on the limbs/joints themselves, this might be hidden in the future
+
+      // All geometry/nodes are created in this method, a fresh set is created every time
+      osg::ref_ptr<osg::Group> createOsgGeometry();
+      // Getter for the osg node
+      osg::ref_ptr<osg::Group> osgGeometry() const;
+      // Call to update the gometry for the robot's parameters
+      void updateOsgGeometry();
 
     private:
-      osg::ref_ptr<osg::Box> m_osgGeometry;
+      // For now hold references to all of these
+      osg::ref_ptr<osg::PositionAttitudeTransform> m_osgTransform;
       osg::ref_ptr<osg::Drawable> m_osgDrawable;
+      osg::ref_ptr<osg::Box> m_osgGeometry;
+      osg::ref_ptr<osg::Geode> m_osgGeode;
 #endif
 
     private:

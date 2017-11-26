@@ -8,8 +8,17 @@
 
 #include <memory>
 
+#ifdef IKENGINE_OSG
+# include <osg/Transform>
+# include <osg/PositionAttitudeTransform>
+# include <osg/Geometry>
+# include <osg/Drawable>
+#endif
+
 namespace IKEngine
 {
+  class Limb;
+  
   /**
    * A joint, rotateable in a single axis. i.e. A servo
    */
@@ -33,7 +42,21 @@ namespace IKEngine
       vec3& position();
       vec3& direction();
       vec3& up();
-      
+    
+#ifdef IKENGINE_OSG
+      // All geometry/nodes are created in this method, a fresh set is created every time
+      osg::ref_ptr<osg::Group> createOsgGeometry();
+      // Getter for the osg node
+      osg::ref_ptr<osg::Group> osgGeometry() const;
+      // Call to update the gometry for the robot's parameters
+      void updateOsgGeometry();
+
+    private:
+      osg::ref_ptr<osg::PositionAttitudeTransform> m_osgTransform;
+      osg::ref_ptr<osg::Drawable> m_osgDrawable;
+      osg::ref_ptr<osg::Sphere> m_osgGeometry;
+      osg::ref_ptr<osg::Geode> m_osgGeode;
+#endif
     private:
       float m_degreeOffset;
       std::unique_ptr<Servo> m_servo;

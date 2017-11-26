@@ -9,33 +9,34 @@
 #include <osgGA/TrackballManipulator>
 
 #include "body.h"
+#include "joint.h"
 #include "limb.h"
+
+#include "servos/servo_mock.h"
 
 int main()
 {
     osgViewer::Viewer viewer;
     osg::Group* root = new osg::Group();
 
-    osg::ref_ptr<osg::Geode> roboGeode{ new osg::Geode() };
-    root->addChild( roboGeode );
-
     // Create a body
-    IKEngine::Body testBody( IKEngine::vec3(3.0, 2.0, 1.0) );
-    roboGeode->addDrawable( testBody.osgGeometry() );
-
+    IKEngine::Body testBody( IKEngine::vec3(0.25, 0.125, 0.5) );
+    
     // Single joint/limb
     {
-      std::shared_ptr<Joint> shoulder{ new Joint( new Servo_Mock ) };
-      std::shared_ptr<Limb> arm{ new Limb( 10.0 ) };
+      std::shared_ptr<IKEngine::Joint> shoulder{ new IKEngine::Joint( new IKEngine::Servo_Mock ) };
+      std::shared_ptr<IKEngine::Limb> arm{ new IKEngine::Limb( 10.0 ) };
       shoulder->next( arm );
-      testBody->addAppendage( shoulder, IKEngine::vec3(0.0, 0.0, 1.0), IKEngine::vec3(0.0, 1.0, 0.0) );
+      
+      // Appendage, position, direction, 'up' vector
+      // Appendage position is relative to the body
+      // Sticking up out of the middle of the body, with direction of travel left/right as seen from 0,0,0
+      testBody.addAppendage( shoulder, IKEngine::vec3(0.0, 0.125, 0.0), IKEngine::vec3(0.0, 1.0, 0.0), IKEngine::vec3(0.0, 0.0, 1.0) );
     }
 
-
-    // Create a limb
-    //IKEngine::Limb testLimb( 10.0, IKEngine::vec3(0.0, 0.0, 1.0) );
-    //osg::ref_ptr<osg::Geometry> limbGeom( testLimb.osgGeometry() );
-    //roboGeode->addDrawable(limbGeom);
+    // Translate to osg geometry
+    // If any limbs are added/removed we'll need to clear this and recreate
+    root->addChild( testBody.createOsgGeometry() );
 
     // switch off lighting as we haven't assigned any normals
     root->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
@@ -43,7 +44,7 @@ int main()
     //The final step is to set up and enter a simulation loop
     viewer.setSceneData( root );
 
-    viewer.setCameraManipulator(new osgGA::TrackballManipulator());
+    //viewer.setCameraManipulator(new osgGA::TrackballManipulator());
     viewer.realize();
 
     while( !viewer.done() )

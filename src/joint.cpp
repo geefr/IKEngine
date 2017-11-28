@@ -8,9 +8,11 @@
 
 namespace IKEngine
 {
-  Joint::Joint( Servo* servo, float degreeOffset, const vec3& rotationAxis )
-  : m_degreeOffset( degreeOffset )
-  , m_servo{ servo }
+  Joint::Joint( Servo* servo, const vec3& rotationAxis )
+  : m_servo{ servo }
+  , m_position{ 0.0, 0.0, 0.0 }
+  , m_rotation{ 0.0, 0.0, 0.0 }
+  , m_servoAxis{ rotationAxis }
   {
     
   }
@@ -35,17 +37,27 @@ namespace IKEngine
   osg::ref_ptr<osg::Group> Joint::createOsgGeometry()
   {
     m_osgTransform = new osg::PositionAttitudeTransform();
-    // Position relative to parent
-    //m_osgTransform->setReferenceFrame( osg::Transform::ReferenceFrame::RELATIVE_RF );
-    
+    m_osgTransform->setReferenceFrame( osg::Transform::ReferenceFrame::RELATIVE_RF );
     m_osgTransform->setPosition( osg::Vec3d( m_position.x(), m_position.y(), m_position.z() ) );
-    // TODO
-    //m_osgTransform->setAttitude( osg::Quat( 0.0, 1.0, 0.0, 1.0 ) ) ;
+    
+    // +90 degrees in X for IKEngine -> osg
+    // Rotation of joint itself
+    osg::Quat attitude( m_rotation.x() + osg::PI_2, osg::X_AXIS,
+                        m_rotation.y(), osg::Y_AXIS,
+                        m_rotation.z(), osg::Z_AXIS );
+    // Rotation from the servo
+    float servoRot{ osg::DegreesToRadians(m_servo->get()) };
+    osg::Quat servoAttitude( (m_servoAxis.x() * servoRot) + osg::PI_2, osg::X_AXIS,
+                             (m_servoAxis.y() * servoRot), osg::Y_AXIS,
+                             (m_servoAxis.z() * servoRot), osg::Z_AXIS );
+    
+    m_osgTransform->setAttitude( attitude * servoAttitude ) ;
     
     m_osgGeometry = new osg::Sphere();
-    m_osgGeometry->setRadius(0.1);
+    m_osgGeometry->setRadius(0.02);
     
     m_osgDrawable = new osg::ShapeDrawable( m_osgGeometry );
+    m_osgDrawable->setColor( osg::Vec4(0.0f, 1.0f, 0.0f, 1.0f) );
     
     m_osgGeode = new osg::Geode();
     m_osgGeode->addDrawable( m_osgDrawable );
@@ -70,8 +82,15 @@ namespace IKEngine
     if( !m_osgTransform ) return;
     
     m_osgTransform->setPosition( osg::Vec3d( m_position.x(), m_position.y(), m_position.z() ) );
-    // TODO
-    m_osgTransform->setAttitude( osg::Quat( 0.0, 1.0, 0.0, 1.0 ) ) ;
+    // +90 degrees in X for IKEngine -> osg
+    float servoRot{ osg::DegreesToRadians(m_servo->get()) };
+    osg::Quat attitude( m_rotation.x() + osg::PI_2, osg::X_AXIS,
+                        m_rotation.y(), osg::Y_AXIS,
+                        m_rotation.z(), osg::Z_AXIS );
+    osg::Quat servoAttitude( (m_servoAxis.x() * servoRot) + osg::PI_2, osg::X_AXIS,
+                         (m_servoAxis.y() * servoRot), osg::Y_AXIS,
+                         (m_servoAxis.z() * servoRot), osg::Z_AXIS );
+    m_osgTransform->setAttitude( attitude * servoAttitude ) ;
     
     if( !m_next )
     {

@@ -25,11 +25,14 @@ namespace IKEngine
     m_osgGeometry = new osg::Geometry();
 
     osg::ref_ptr<osg::Vec3Array> vertices{ new osg::Vec3Array() };
+    // Position of the parent joint, relative to the parent joint's transform
     vertices->push_back( osg::Vec3(0.0, 0.0, 0.0) );
+    // Other end of this limb
     vertices->push_back( osg::Vec3(m_limbVector.x(), m_limbVector.y(), m_limbVector.z()) );
 
     osg::ref_ptr<osg::Vec4Array> colour{ new osg::Vec4Array };
-    colour->push_back(osg::Vec4(1.0, 0.0, 0.0, 1.0));
+    colour->push_back(osg::Vec4(0.0, 0.0, 1.0, 1.0));
+    colour->push_back(osg::Vec4(0.0, 0.0, 1.0, 1.0));
 
     vertices->setBinding( osg::Array::BIND_PER_VERTEX );
 

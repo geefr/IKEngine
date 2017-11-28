@@ -11,7 +11,7 @@
 #include <vector>
 
 #ifdef IKENGINE_OSG
-# include <osg/Drawable>
+# include <osg/ShapeDrawable>
 # include <osg/PositionAttitudeTransform>
 # include <osg/Geometry>
 # include <osg/Geode>
@@ -42,11 +42,14 @@ namespace IKEngine
       // - Display in software/test applications before using hardware
       size_t numAppendages() const;
       void addAppendage( std::shared_ptr<Joint> appendage, 
-        const vec3& position,
-        const vec3& direction,
-        const vec3& up );
+        const vec3& position, const vec3& rotation, const vec3& servoAxis );
       std::shared_ptr<Joint> getAppendage( size_t i );
       void removeAppendage( size_t i );
+      
+      vec3& position();
+      void position( const vec3& pos );
+      vec3& rotation();
+      void rotation( const vec3& rot );
 
 #ifdef IKENGINE_OSG
       // Body provides the root of the robot for osg
@@ -67,7 +70,7 @@ namespace IKEngine
     private:
       // For now hold references to all of these
       osg::ref_ptr<osg::PositionAttitudeTransform> m_osgTransform;
-      osg::ref_ptr<osg::Drawable> m_osgDrawable;
+      osg::ref_ptr<osg::ShapeDrawable> m_osgDrawable;
       osg::ref_ptr<osg::Box> m_osgGeometry;
       osg::ref_ptr<osg::Geode> m_osgGeode;
 #endif
@@ -75,7 +78,16 @@ namespace IKEngine
     private:
       std::vector<std::shared_ptr<Joint>> m_appendages;
       vec3 m_dimensions;
+      // Position in world space (center of body)
+      vec3 m_position;
+      // Rotation (radians (x,y,z))
+      vec3 m_rotation;
   };
+  
+  inline vec3& Body::position() { return m_position; }
+  inline void Body::position( const vec3& pos ) { m_position = pos; }
+  inline vec3& Body::rotation() { return m_rotation; }
+  inline void Body::rotation( const vec3& rot ) { m_rotation = rot; }
 };
 
 #endif
